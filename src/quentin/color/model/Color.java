@@ -5,11 +5,17 @@ public class Color {
     private int green;
     private int blue;
     private String hexValue;
+    private static final String HEXA_REGEX_PATTERN = "^#([A-F0-9]{6})$";
 
+    /**
+     * Instancie une couleur et intialise sa valeur hexadecimal selon ses valeurs RGB.
+     * @param red valeur int du rouge
+     * @param green valeur int du vert
+     * @param blue valeur int du bleu
+     * @throws IllegalArgumentException;
+     */
     public Color(int red, int green, int blue){
-        if ( !(red>=0 && red<=255) || !(green>=0 && green<=255) || !(blue>=0 && blue<=255)){
-            throw new IllegalArgumentException("Les arguments doivent être compris entre 0 et 255 !");
-        }else {
+        if(isCorrectArgumentToSetRGBValues(red) && isCorrectArgumentToSetRGBValues(green) && isCorrectArgumentToSetRGBValues(blue)){
             this.red = red;
             this.green = green;
             this.blue = blue;
@@ -17,14 +23,79 @@ public class Color {
         }
     }
 
+    /**
+     * Instancie une couleur et intialise ses valeurs RGB selon sa valeur hexadecimal.
+     * @param hexValue valeur String hexadecimal
+     * @throws IllegalArgumentException;
+     */
     public Color(String hexValue){
-        if ( hexValue == null || !(hexValue.matches("^#([A-F0-9]{6})$"))){
-            throw new IllegalArgumentException("Pas le bon format");
-        } else {
+        if (isCorrectArgumentToSetHexValue(hexValue)){
             this.hexValue = hexValue;
-            this.red = Integer.valueOf(hexValue.substring(1,3), 16);
-            this.green = Integer.valueOf(hexValue.substring(3,5), 16);
-            this.blue = Integer.valueOf(hexValue.substring(5,7),16);
+            convertHexInColor();
+        }
+    }
+
+    /**
+     * Verifie que color est compris entre 0 et 255
+     * @param color valeur int de la couleur
+     * @throws IllegalArgumentException;
+     * @return true si la condition est respectée
+     */
+    private boolean isCorrectArgumentToSetRGBValues(int color){
+        if (!(color >= 0 && color <= 255)){
+            throw new IllegalArgumentException("L'argument doit être compris entre 0 et 255 !");
+        }
+        return true;
+    }
+
+    /**
+     * Verifie que hexValue n'est pas null et match HEXA_REGEX_PATTERN
+     * @param hexValue valeur String hexadecimal
+     * @throws IllegalArgumentException;
+     * @return true si la condition est respectée
+     */
+    private boolean isCorrectArgumentToSetHexValue(String hexValue){
+        if (hexValue == null || !(hexValue.matches(HEXA_REGEX_PATTERN))){
+            throw new IllegalArgumentException("Pas le bon format !");
+        }
+        return true;
+    }
+
+    /**
+     * Convertit color au format hexadecimal
+     * @param color valeur int de la couleur
+     * @return color au format hexadecimal
+     */
+    private String convertColorInHex(int color){
+        return String.format("%02X", color);
+    }
+
+    /**
+     * Convertit une valeur hexadecimal en trois couleurs RGB
+     */
+    private void convertHexInColor(){
+        this.red = Integer.valueOf(this.hexValue.substring(1, 3), 16);
+        this.green = Integer.valueOf(this.hexValue.substring(3, 5), 16);
+        this.blue = Integer.valueOf(this.hexValue.substring(5, 7), 16);
+    }
+
+    /**
+     * Calcule la valeur hexadecimal depuis les valeurs RGB
+     * @param colorName nom de la couleur
+     * @param colorInt valeur int de la couleur
+     */
+    private void calculateHexValueFromRGBValues(String colorName, int colorInt){
+        String hexValue = convertColorInHex(colorInt);
+        switch (colorName){
+            case "red":
+                this.hexValue = this.hexValue.replace(this.hexValue.substring(1,3), hexValue);
+                break;
+            case "green":
+                this.hexValue = this.hexValue.replace(this.hexValue.substring(3,5), hexValue);
+                break;
+            case "blue" :
+                this.hexValue = this.hexValue.replace(this.hexValue.substring(5,7), hexValue);
+                break;
         }
     }
 
@@ -33,14 +104,9 @@ public class Color {
     }
 
     public void setRed(int red){
-        if (!(red>=0 && red<=255)){
-            throw new IllegalArgumentException("L'argument doit être compris entre 0 et 255 !");
-        }else {
+        if(isCorrectArgumentToSetRGBValues(red)) {
             this.red = red;
-            String redInHex = String.format("%02X", this.red);
-            this.hexValue.replace(this.hexValue.substring(1,3), redInHex);
-            this.hexValue = this.hexValue.replace(this.hexValue.substring(1,3), redInHex);
-            //this.hexValue = String.format("#%02X%02X%02X", this.red, this.green, this.blue);
+            calculateHexValueFromRGBValues("red",red);
         }
     }
 
@@ -49,13 +115,9 @@ public class Color {
     }
 
     public void setGreen(int green){
-        if ( !(green>=0 && green<=255)){
-            throw new IllegalArgumentException("L'argument doit être compris entre 0 et 255 !");
-        }else {
+        if(isCorrectArgumentToSetRGBValues(green)){
             this.green = green;
-            String greenInHex = String.format("%02X", this.green);
-            this.hexValue.replace(this.hexValue.substring(3,5), greenInHex);
-            this.hexValue = this.hexValue.replace(this.hexValue.substring(3,5), greenInHex);
+            calculateHexValueFromRGBValues("green",green);
         }
     }
 
@@ -64,13 +126,9 @@ public class Color {
     }
 
     public void setBlue(int blue){
-        if ( !(blue>=0 && blue<=255)){
-            throw new IllegalArgumentException("L'argument doit être compris entre 0 et 255 !");
-        }else {
+        if (isCorrectArgumentToSetRGBValues(blue)){
             this.blue = blue;
-            String blueInHex = String.format("%02X", this.blue);
-            this.hexValue.replace(this.hexValue.substring(5,7), blueInHex);
-            this.hexValue = this.hexValue.replace(this.hexValue.substring(5,7), blueInHex);
+            calculateHexValueFromRGBValues("blue",blue);
         }
     }
 
@@ -79,14 +137,9 @@ public class Color {
     }
 
     public void setHexValue(String hexValue) {
-        if (hexValue == null || !(hexValue.matches("^#([A-F0-9]{6})$"))){
-            throw new IllegalArgumentException();
-        }else {
+        if (isCorrectArgumentToSetHexValue(hexValue)){
             this.hexValue = hexValue;
-            this.red = Integer.valueOf(hexValue.substring(1, 3), 16);
-            this.green = Integer.valueOf(hexValue.substring(3, 5), 16);
-            this.blue = Integer.valueOf(hexValue.substring(5, 7), 16);
-
+            convertHexInColor();
         }
     }
 
