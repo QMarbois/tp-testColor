@@ -19,35 +19,35 @@ public class Color {
     public Color(String hexValue){
         if (isCorrectArgumentToSetHexValue(hexValue)){
             this.hexValue = hexValue;
-            convertHexInColor(hexValue);
+            convertHexInColor();
         }
     }
 
-    public boolean isCorrectArgumentToSetRGBValues(int color){
+    private boolean isCorrectArgumentToSetRGBValues(int color){
         if (!(color >= 0 && color <= 255)){
             throw new IllegalArgumentException("L'argument doit être compris entre 0 et 255 !");
         }
         return true;
     }
 
-    public boolean isCorrectArgumentToSetHexValue(String hexValue){
+    private boolean isCorrectArgumentToSetHexValue(String hexValue){
         if (hexValue == null || !(hexValue.matches(HEXA_REGEX_PATTERN))){
             throw new IllegalArgumentException("Pas le bon format !");
         }
         return true;
     }
 
-    public String convertColorInHex(int color){
+    private String convertColorInHex(int color){
         return String.format("%02X", color);
     }
 
-    public void convertHexInColor(String hexValue){
-        this.red = Integer.valueOf(hexValue.substring(1, 3), 16);
-        this.green = Integer.valueOf(hexValue.substring(3, 5), 16);
-        this.blue = Integer.valueOf(hexValue.substring(5, 7), 16);
+    private void convertHexInColor(){
+        this.red = Integer.valueOf(this.hexValue.substring(1, 3), 16);
+        this.green = Integer.valueOf(this.hexValue.substring(3, 5), 16);
+        this.blue = Integer.valueOf(this.hexValue.substring(5, 7), 16);
     }
 
-    public void calculateHexValueFromRGBValues(String colorName, int colorInt){
+    private void calculateHexValueFromRGBValues(String colorName, int colorInt){
         String hexValue = convertColorInHex(colorInt);
         switch (colorName){
             case "red":
@@ -102,7 +102,7 @@ public class Color {
     public void setHexValue(String hexValue) {
         if (isCorrectArgumentToSetHexValue(hexValue)){
             this.hexValue = hexValue;
-            convertHexInColor(hexValue);
+            convertHexInColor();
         }
     }
 
